@@ -30,42 +30,36 @@ export const useCoursesStore = defineStore('courses', {
   actions: {
     // Inicializar listener en tiempo real (idempotente)
     initCoursesListener() {
-      console.log('[Store:courses] initCoursesListener called')
-      if (this._unsubscribe) {
-        console.log('[Store:courses] listener already active')
-        return this._unsubscribe
-      }
+      if (this._unsubscribe) return this._unsubscribe
 
       this.loading = true
+      this.error = null
+
       const coursesCollection = collection(db, 'courses')
 
-      const unsubscribe = onSnapshot(coursesCollection, (snapshot) => {
-        console.log('[Store:courses] onSnapshot triggered, docs count:', snapshot.docs.length)
-        this.courses = snapshot.docs.map(d => {
-          const data = d.data()
-          console.log('[Store:courses] doc fetched:', d.id, data)
-          return { id: d.id, ...data }
-        })
-        this.loading = false
-      }, (error) => {
-        console.error('[Store:courses] onSnapshot error', error)
-        this.error = error.message
-        this.loading = false
-      })
+      const unsubscribe = onSnapshot(
+        coursesCollection,
+        (snapshot) => {
+          this.courses = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+          this.loading = false
+        },
+        (error) => {
+          this.error = error?.message || String(error)
+          this.loading = false
+        }
+      )
 
       this._unsubscribe = unsubscribe
-      console.log('[Store:courses] listener registered')
       return this._unsubscribe
     },
 
-    // detener listener manualmente
+    // Detener listener manualmente
     stopListener() {
-      console.log('[Store:courses] stopListener called')
       if (this._unsubscribe && typeof this._unsubscribe === 'function') {
         try {
           this._unsubscribe()
-          console.log('[Store:courses] listener unsubscribed successfully')
         } catch (e) {
+          // no interrumpir flujo por error al unsubscribe
           console.warn('[Store:courses] error unsubscribing', e)
         } finally {
           this._unsubscribe = null
@@ -73,118 +67,120 @@ export const useCoursesStore = defineStore('courses', {
       }
     },
 
-    // one-time fetch
+    // one-time fetch (snapshot único)
     async fetchCourses() {
-      console.log('[Store:courses] fetchCourses called')
       this.loading = true
       this.error = null
       try {
         const coursesCollection = collection(db, 'courses')
         const snapshot = await getDocs(coursesCollection)
-        console.log('[Store:courses] fetchCourses got docs:', snapshot.docs.length)
-        this.courses = snapshot.docs.map(d => {
-          const data = d.data()
-          console.log('[Store:courses] fetched doc:', d.id, data)
-          return { id: d.id, ...data }
-        })
-      } catch (error) {
-        console.error('[Store:courses] fetchCourses error', error)
-        this.error = error.message
+        this.courses = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+        return { success: true }
+      } catch (err) {
+        this.error = err?.message || String(err)
+        return { success: false, error: this.error }
       } finally {
         this.loading = false
       }
     },
 
-    // add course (with optimistic local update if listener not active)
+    // Agregar curso (optimistic local update si no hay listener)
     async addCourse(courseData) {
-      console.log('[Store:courses] addCourse called ->', courseData)
+      if (!courseData || typeof courseData !== 'object') {
+        return { success: false, error: 'Invalid course data' }
+      }
+
       this.loading = true
       this.error = null
       try {
         const coursesCollection = collection(db, 'courses')
         const docRef = await addDoc(coursesCollection, courseData)
-        console.log('[Store:courses] addDoc success id=', docRef.id)
 
+        // Si no hay listener en tiempo real, mantenemos la UI sincronizada con un optimistic push
         if (!this._unsubscribe) {
+          // evitar duplicados por id desconocido: usamos el id devuelto
           this.courses.unshift({ id: docRef.id, ...courseData })
-          console.log('[Store:courses] optimistic local push of new course', docRef.id)
-          console.log('[Store:courses] courses after optimistic push:', this.courses)
-        } else {
-          console.log('[Store:courses] listener active, skipping optimistic update')
         }
 
         return { success: true, id: docRef.id }
-      } catch (error) {
-        console.error('[Store:courses] addDoc error', error)
-        this.error = error.message
-        return { success: false, error: error.message }
+      } catch (err) {
+        this.error = err?.message || String(err)
+        return { success: false, error: this.error }
       } finally {
         this.loading = false
-        console.log('[Store:courses] addCourse finished')
       }
     },
 
-    // update course (with optimistic local update if listener not active)
+    // Actualizar curso (partial update). Devuelve { success, error }.
     async updateCourse(courseId, courseData) {
-      console.log('[Store:courses] updateCourse called ->', courseId, courseData)
+      if (!courseId) return { success: false, error: 'Missing courseId' }
+      if (!courseData || typeof courseData !== 'object') return { success: false, error: 'Invalid payload' }
+
       this.loading = true
       this.error = null
+      // guardamos snapshot local para posible rollback si hacemos optimistic update
+      const idx = this.courses.findIndex(c => c.id === courseId)
+      const prev = idx !== -1 ? { ...this.courses[idx] } : null
+
       try {
         const courseRef = doc(db, 'courses', courseId)
         await updateDoc(courseRef, courseData)
-        console.log('[Store:courses] updateDoc success', courseId)
 
-        if (!this._unsubscribe) {
-          const idx = this.courses.findIndex(c => c.id === courseId)
-          if (idx !== -1) this.courses[idx] = { ...this.courses[idx], ...courseData }
-          console.log('[Store:courses] optimistic local update applied', courseId)
-          console.log('[Store:courses] courses after optimistic update:', this.courses)
-        } else {
-          console.log('[Store:courses] listener active, skipping optimistic update')
+        // si no hay listener, aplicar cambio localmente
+        if (!this._unsubscribe && idx !== -1) {
+          this.courses[idx] = { ...this.courses[idx], ...courseData }
         }
 
         return { success: true }
-      } catch (error) {
-        console.error('[Store:courses] updateDoc error', error)
-        this.error = error.message
-        return { success: false, error: error.message }
+      } catch (err) {
+        // revertir si se aplicó localmente
+        if (!this._unsubscribe && idx !== -1 && prev) {
+          this.courses[idx] = prev
+        }
+        this.error = err?.message || String(err)
+        return { success: false, error: this.error }
       } finally {
         this.loading = false
-        console.log('[Store:courses] updateCourse finished')
       }
     },
 
-    // delete course (with optimistic local delete if listener not active)
+    // Toggle helper que delega en updateCourse
+    async toggleCourse(courseId, newEstado) {
+      return await this.updateCourse(courseId, { estado: Boolean(newEstado) })
+    },
+
+    // Eliminar curso
     async deleteCourse(courseId) {
-      console.log('[Store:courses] deleteCourse called ->', courseId)
+      if (!courseId) return { success: false, error: 'Missing courseId' }
+
       this.loading = true
       this.error = null
+      // snapshot previo para rollback
+      const prevList = this._unsubscribe ? null : [...this.courses]
+
       try {
         const courseRef = doc(db, 'courses', courseId)
         await deleteDoc(courseRef)
-        console.log('[Store:courses] deleteDoc success', courseId)
 
+        // si no hay listener, eliminar localmente
         if (!this._unsubscribe) {
           this.courses = this.courses.filter(c => c.id !== courseId)
-          console.log('[Store:courses] optimistic local delete applied', courseId)
-          console.log('[Store:courses] courses after optimistic delete:', this.courses)
-        } else {
-          console.log('[Store:courses] listener active, skipping optimistic delete')
         }
 
         return { success: true }
-      } catch (error) {
-        console.error('[Store:courses] deleteDoc error', error)
-        this.error = error.message
-        return { success: false, error: error.message }
+      } catch (err) {
+        // rollback si hicimos cambio local sin listener
+        if (!this._unsubscribe && Array.isArray(prevList)) {
+          this.courses = prevList
+        }
+        this.error = err?.message || String(err)
+        return { success: false, error: this.error }
       } finally {
         this.loading = false
-        console.log('[Store:courses] deleteCourse finished')
       }
     },
 
     clearError() {
-      console.log('[Store:courses] clearError called')
       this.error = null
     }
   }

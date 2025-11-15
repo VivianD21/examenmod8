@@ -281,7 +281,7 @@ const handleLogin = async () => {
 /* Login Button */
 .login-btn {
   width: 100%;
-  background: #2196f3;
+  background: #e70e0e;
   border: none;
   color: white;
   padding: 1.25rem 2rem;
@@ -294,7 +294,7 @@ const handleLogin = async () => {
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+  box-shadow: 0 2px 8px rgba(59, 6, 6, 0.2);
 }
 
 .login-btn::before {
@@ -313,8 +313,8 @@ const handleLogin = async () => {
 }
 
 .login-btn:hover:not(:disabled) {
-  background: #1976d2;
-  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+  background: #8b0505;
+  box-shadow: 0 4px 12px rgba(54, 9, 19, 0.3);
 }
 
 .login-btn:active {
@@ -359,8 +359,8 @@ const handleLogin = async () => {
 
 .register-link {
   background: transparent;
-  border: 2px solid #2196f3;
-  color: #2196f3;
+  border: 2px solid #7a0909;
+  color: #f32133;
   padding: 0.75rem 2rem;
   border-radius: 8px;
   font-weight: 600;
@@ -370,7 +370,7 @@ const handleLogin = async () => {
 }
 
 .register-link:hover:not(:disabled) {
-  background: #2196f3;
+  background: #b90f1d;
   color: white;
 }
 

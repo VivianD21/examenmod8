@@ -193,6 +193,6 @@ onUnmounted(() => {
 
 <style scoped>
 .h2 {
-  color: #007bff;
+  color: #9b0e15;
 }
 </style>

@@ -5,7 +5,7 @@
         <div class="d-flex justify-content-between align-items-center">
           <div>
             <h1 class="h2 mb-1">Administración de Cursos</h1>
-            <p class="text-muted mb-0">Gestiona los cursos de AdWeb Online</p>
+            <p class="text-muted mb-0">Gestiona los cursos de AWO</p>
           </div>
 
           <div class="d-flex gap-2">
@@ -33,7 +33,7 @@
     </BRow>
 
     <div v-if="coursesStore.isLoading" class="text-center my-5">
-      <BSpinner variant="primary" class="me-2"></BSpinner>
+      <BSpinner variant="primary" class="me-2" />
       <span>Cargando cursos...</span>
     </div>
 
@@ -41,94 +41,95 @@
       Error: {{ coursesStore.getError }}
     </BAlert>
 
-    <BCard v-if="!coursesStore.isLoading && !coursesStore.getError">
-      <BTable
-        :items="coursesStore.allCourses"
-        :fields="tableFields"
-        striped
-        hover
-        responsive
-        class="mb-0"
-      >
-     <template #cell(img)="data">
-  <img
-    v-if="data.item.img"
-    :src="data.item.img"
-    :alt="data.item.nombre"
-    style="width: 50px; height: 50px; object-fit: contain; cursor: pointer;"
-    class="rounded"
-    @click="openImageModal(data.item)"
-  />
-  <div
-    v-else
-    style="width:50px; height:50px; background:#f0f0f0; border-radius:6px; cursor: default;"
-  ></div>
-</template>
+    <BCard v-if="!coursesStore.isLoading && !coursesStore.getError" class="admin-card">
+      <div class="table-wrapper">
+        <BTable
+          :items="coursesStore.allCourses"
+          :fields="tableFields"
+          striped
+          hover
+          responsive
+          class="mb-0 admin-table"
+        >
+          <template #cell(img)="data">
+            <img
+              v-if="data.item.img"
+              :src="data.item.img"
+              :alt="data.item.nombre"
+              style="width: 50px; height: 50px; object-fit: contain; cursor: pointer;"
+              class="rounded"
+              @click="openImageModal(data.item)"
+            />
+            <div
+              v-else
+              style="width:50px; height:50px; background:#f0f0f0; border-radius:6px; cursor: default;"
+            ></div>
+          </template>
 
-
-        <template #cell(estado)="data">
-          <BFormCheckbox
-            :checked="Boolean(data.item.estado)"
-            :disabled="coursesStore.isLoading"
-            @update:checked="val => toggleCourseState(data.item, val)"
-            size="sm"
-            aria-label="Toggle estado"
-          >
-            {{ data.item.estado ? 'Activo' : 'Inactivo' }}
-          </BFormCheckbox>
-        </template>
-
-        <template #cell(precio)="data">
-          ${{ formatPrice(data.item.precio) }}
-        </template>
-
-        <template #cell(ocupacion)="data">
-          {{ data.item.inscritos }}/{{ data.item.cupos }}
-          ({{ Math.round((data.item.inscritos / (data.item.cupos || 1)) * 100) || 0 }}%)
-        </template>
-
-        <template #cell(actions)="data">
-          <BButtonGroup size="sm">
-            <BButton
-              variant="outline-primary"
-              @click="editCourse(data.item)"
+          <template #cell(estado)="data">
+            <BFormCheckbox
+              :checked="Boolean(data.item.estado)"
               :disabled="coursesStore.isLoading"
-              data-cy="edit-course-btn"
-            >✏️</BButton>
+              @update:checked="val => toggleCourseState(data.item, val)"
+              size="sm"
+              aria-label="Toggle estado"
+            >
+              {{ data.item.estado ? 'Activo' : 'Inactivo' }}
+            </BFormCheckbox>
+          </template>
 
-            <BButton
-              variant="outline-danger"
-              @click="confirmDelete(data.item)"
-              :disabled="coursesStore.isLoading"
-              data-cy="delete-course-btn"
-            >🗑️</BButton>
-          </BButtonGroup>
-        </template>
-      </BTable>
+          <template #cell(precio)="data">
+            ${{ formatPrice(data.item.precio) }}
+          </template>
+
+          <template #cell(ocupacion)="data">
+            {{ data.item.inscritos }}/{{ data.item.cupos }}
+            ({{ Math.round((data.item.inscritos / (data.item.cupos || 1)) * 100) || 0 }}%)
+          </template>
+
+          <template #cell(actions)="data">
+            <BButtonGroup size="sm">
+              <BButton
+                variant="outline-primary"
+                @click="editCourse(data.item)"
+                :disabled="coursesStore.isLoading"
+                data-cy="edit-course-btn"
+              >✏️</BButton>
+
+              <BButton
+                variant="outline-danger"
+                @click="confirmDelete(data.item)"
+                :disabled="coursesStore.isLoading"
+                data-cy="delete-course-btn"
+              >🗑️</BButton>
+            </BButtonGroup>
+          </template>
+        </BTable>
+      </div>
     </BCard>
 
-<!-- Modal Agregar Curso (formulario) -->
-<BModal v-model="showAddModal" title="Agregar Nuevo Curso" size="lg">
-  <CourseForm :course="newCourse" @update-course="updateNewCourse" />
+    <!-- Modal Agregar Curso (formulario) -->
+    <BModal v-model="showAddModal" title="Agregar Nuevo Curso" size="lg">
+      <CourseForm :course="newCourse" @update-course="updateNewCourse" />
 
-  <template #footer>
-    <BButton
-      variant="secondary"
-      @click="() => { console.log('[UI] Cancel Add clicked'); showAddModal = false }"
-      data-cy="cancel-add-btn"
-    >
-      Cancelar
-    </BButton>
-    <BButton
-      variant="primary"
-      :disabled="coursesStore.isLoading"
-      @click="() => { console.log('[UI] Confirm Add Form clicked'); confirmAddCourse() }"
-      data-cy="confirm-add-btn"
-    >
-      Agregar Curso
-    </BButton>
-  </template>
-</BModal>
+      <template #footer>
+        <BButton
+          variant="secondary"
+          @click="() => { showAddModal = false }"
+          data-cy="cancel-add-btn"
+        >
+          Cancelar
+        </BButton>
+        <BButton
+          variant="primary"
+          :disabled="coursesStore.isLoading"
+          @click="() => { confirmAddCourse() }"
+          data-cy="confirm-add-btn"
+        >
+          Agregar Curso
+        </BButton>
+      </template>
+    </BModal>
 
     <!-- Modal Confirmar Agregar (acción final) -->
     <BModal v-model="showConfirmAdd" title="Confirmar" centered>
@@ -149,24 +150,23 @@
     </BModal>
 
     <!-- Modal pequeño al clicar imagen -->
-<BModal
-  v-model="showImageModal"
-  title="Información del curso"
-  size="sm"
-  centered
-  hide-footer
-  data-cy="course-image-modal"
->
-  <div v-if="modalCourse">
-    <p><strong>Nombre:</strong> {{ modalCourse.nombre }}</p>
-    <p><strong>Fecha de inicio:</strong> {{ formatStartDate(modalCourse.fechaInicio) }}</p>
-    <p><strong>Cupos disponibles:</strong> {{ availableSeats(modalCourse) }}</p>
-  </div>
-  <div v-else>
-    <p>Sin información del curso</p>
-  </div>
-</BModal>
-
+    <BModal
+      v-model="showImageModal"
+      title="Información del curso"
+      size="sm"
+      centered
+      hide-footer
+      data-cy="course-image-modal"
+    >
+      <div v-if="modalCourse">
+        <p><strong>Nombre:</strong> {{ modalCourse.nombre }}</p>
+        <p><strong>Fecha de inicio:</strong> {{ formatStartDate(modalCourse.fechaInicio) }}</p>
+        <p><strong>Cupos disponibles:</strong> {{ availableSeats(modalCourse) }}</p>
+      </div>
+      <div v-else>
+        <p>Sin información del curso</p>
+      </div>
+    </BModal>
 
     <!-- Modal Confirmar Eliminar -->
     <BModal
@@ -199,8 +199,6 @@
   </div>
 </template>
 
-
-
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -231,12 +229,9 @@ const showConfirmAdd = ref(false)
 const showConfirmDelete = ref(false)
 const courseToDelete = ref(null)
 
-
-
 // modal de imagen
 const showImageModal = ref(false)
 const modalCourse = ref(null)
-
 const openImageModal = (course) => {
   modalCourse.value = course || null
   showImageModal.value = true
@@ -253,7 +248,6 @@ const availableSeats = (course) => {
 // formatea fecha de inicio; si no existe muestra "Por confirmar"
 const formatStartDate = (raw) => {
   if (!raw) return 'Por confirmar'
-  // suponer ISO string o timestamp; intentar normalizar
   try {
     const d = new Date(raw)
     if (isNaN(d.getTime())) return String(raw)
@@ -262,8 +256,6 @@ const formatStartDate = (raw) => {
     return String(raw)
   }
 }
-
-
 
 const newCourse = ref({
   codigo: '',
@@ -313,92 +305,80 @@ const resetForm = () => {
   newCourse.value = { codigo: '', nombre: '', descripcion: '', precio: '', duracion: '', cupos: '', inscritos: 0, estado: true, img: '' }
 }
 
-// toggle handler con optimistic update y rollback (no console.log suelto)
+// toggle handler con optimistic update y rollback
 const toggleCourseState = async (item, newState) => {
-  console.log('[UI] toggleCourseState called', item?.id, 'newState=', newState)
   if (!item || !item.id) return
   if (coursesStore.isLoading) return
 
   const id = item.id
   const desired = Boolean(newState)
-  const idx = coursesStore.courses.findIndex(c => c.id === id)
-  const prev = idx !== -1 ? { ...coursesStore.courses[idx] } : null
 
-  if (idx !== -1) coursesStore.courses[idx] = { ...coursesStore.courses[idx], estado: desired }
+  // buscar índice en allCourses para mantener一致encia con BTable
+  const idx = coursesStore.allCourses.findIndex(c => c.id === id)
+  const prev = idx !== -1 ? { ...coursesStore.allCourses[idx] } : null
+
+  if (idx !== -1) coursesStore.allCourses[idx] = { ...coursesStore.allCourses[idx], estado: desired }
 
   try {
+    // se asume que tu store expone updateCourse(id, payload) que retorna { success: boolean }
     const result = await coursesStore.updateCourse(id, { estado: desired })
-    console.log('[UI] toggleCourseState store result', result)
     if (!(result && result.success)) {
-      if (idx !== -1 && prev) coursesStore.courses[idx] = prev
+      if (idx !== -1 && prev) coursesStore.allCourses[idx] = prev
+      // UI feedback mínimo
+      // eslint-disable-next-line no-alert
       alert('No fue posible actualizar el estado del curso')
-    } else {
-      console.log('[UI] toggleCourseState done', id)
     }
   } catch (err) {
-    if (idx !== -1 && prev) coursesStore.courses[idx] = prev
-    console.error('[UI] toggleCourseState exception', err)
+    if (idx !== -1 && prev) coursesStore.allCourses[idx] = prev
+    console.error('[Admin] toggleCourseState exception', err)
+    // eslint-disable-next-line no-alert
     alert('Error crítico al actualizar el estado')
   }
 }
 
-// abrir modal formulario (header)
-const openAddForm = () => {
-  console.log('[UI] openAddForm called')
-  showAddModal.value = true
-}
+// UI handlers
+const openAddForm = () => { showAddModal.value = true }
+const confirmAddCourse = () => { showAddModal.value = false; showConfirmAdd.value = true }
 
-// abrir modal de confirmación (desde modal formulario)
-const confirmAddCourse = () => {
-  console.log('[UI] confirmAddCourse called')
-  showAddModal.value = false
-  showConfirmAdd.value = true
-}
-
-// handler final: cerrar confirm y ejecutar add
 const onConfirmAdd = async () => {
-  console.log('[UI] onConfirmAdd called')
   showConfirmAdd.value = false
-  await Promise.resolve()
   await addCourse()
 }
 
-// addCourse: llamar store y limpiar formulario; confiar en onSnapshot para actualizar UI
 const addCourse = async () => {
-  console.log('[UI] addCourse called', JSON.parse(JSON.stringify(newCourse.value)))
   const courseData = {
     ...newCourse.value,
     precio: Number(newCourse.value.precio) || 0,
     cupos: Number(newCourse.value.cupos) || 0,
     inscritos: Number(newCourse.value.inscritos) || 0
   }
-
   try {
     const result = await coursesStore.addCourse(courseData)
-    console.log('[UI] addCourse result', result)
     if (result && result.success) {
       resetForm()
       showAddModal.value = false
     } else {
+      // eslint-disable-next-line no-alert
       alert('Error al agregar curso: ' + (result?.error || 'Error desconocido'))
     }
   } catch (err) {
-    console.error('[UI] addCourse exception', err)
+    console.error('[Admin] addCourse exception', err)
+    // eslint-disable-next-line no-alert
     alert('Error crítico al agregar curso')
   }
 }
 
 const editCourse = (course) => { router.push(`/admin/edit/${course.id}`) }
 const confirmDelete = (course) => { courseToDelete.value = course; showConfirmDelete.value = true }
-const handleDeleteConfirm = (event) => { event.preventDefault(); deleteCourse() }
-const onConfirmDeleteClick = () => { deleteCourse() }
-
-const deleteCourse = async () => {
+const onConfirmDeleteClick = async () => {
   showConfirmDelete.value = false
   if (!courseToDelete.value) return
   try {
     const result = await coursesStore.deleteCourse(courseToDelete.value.id)
-    if (!(result && result.success)) alert('Error al eliminar curso: ' + (result?.error || 'Error desconocido'))
+    if (!(result && result.success)) {
+      // eslint-disable-next-line no-alert
+      alert('Error al eliminar curso: ' + (result?.error || 'Error desconocido'))
+    }
   } finally {
     courseToDelete.value = null
   }
@@ -419,10 +399,7 @@ const initializeCourses = async () => {
 
 onMounted(() => {
   if (!unsubscribe.value) {
-    unsubscribe.value = coursesStore.initCoursesListener()
-    console.log('[Admin] initCoursesListener requested')
-    // temporal: exponer store para depuración
-    window.__coursesStore = coursesStore
+    unsubscribe.value = coursesStore.initCoursesListener && coursesStore.initCoursesListener()
   }
 })
 
@@ -430,11 +407,50 @@ onUnmounted(() => {
   if (unsubscribe.value && typeof unsubscribe.value === 'function') {
     unsubscribe.value()
     unsubscribe.value = null
-    console.log('[Admin] listener unsubscribed from AdminView')
   }
 })
 </script>
 
 <style scoped>
-.h2 { color: #007bff; }
+:root {
+  --pastel-pink: #FFD7E2;
+}
+
+/* wrapper para controlar overflow y radio */
+.table-wrapper {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Aplicar fondo rosa pastel a la tabla completa */
+.admin-table table {
+  background-color: var(--pastel-pink);
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+
+/* Encabezado con tono más claro */
+.admin-table thead {
+  background: rgba(0, 0, 0, 0.041);
+}
+
+/* Filas con fondo pastel y separación sutil */
+.admin-table tbody tr {
+  background: var(--pastel-pink);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+/* Celdas: transparencia para no duplicar color */
+.admin-table td,
+.admin-table th {
+  background: transparent;
+  vertical-align: middle;
+}
+
+
+
+
+/* Mantener el estilo pequeño del h2 */
+.h2 { color: #bb1313; }
 </style>

@@ -3,8 +3,8 @@
     <div class="navbar-container">
       <!-- Logo/Brand -->
       <div class="navbar-brand" @click="$router.push('/')">
-        <div class="brand-icon">AW</div>
-        <span class="brand-text">AdWeb Online</span>
+        <div class="brand-icon">AWO</div>
+        <span class="brand-text">Courses</span>
       </div>
 
       <!-- Navigation Links -->
@@ -95,7 +95,7 @@ export default {
 
 <style scoped>
 .modern-navbar {
-  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+  background: linear-gradient(135deg, #ec1414 30%, #380202 90%, #f5a6a6 5%);
   box-shadow: 0 2px 12px rgba(33, 150, 243, 0.15);
   padding: 0;
   margin-bottom: 1rem;
@@ -113,11 +113,12 @@ export default {
   min-height: 70px;
 }
 
+
 /* Brand/Logo */
 .navbar-brand {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
   cursor: pointer;
   transition: transform 0.2s ease;
   color: white;
@@ -133,7 +134,7 @@ export default {
   font-weight: 800;
   color: white;
   background: rgba(255, 255, 255, 0.2);
-  width: 36px;
+  width: 56px;
   height: 36px;
   border-radius: 8px;
   display: flex;
@@ -243,7 +244,7 @@ export default {
 }
 
 .logout-btn {
-  background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+  background: linear-gradient(45deg, #790808, #f10d0d);
   border: none;
   color: white;
   padding: 0.75rem 1.25rem;

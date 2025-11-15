@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="hero-section">
       <div class="hero-content">
-        <h1 class="hero-title">Bienvenido a AdWeb Online</h1>
+        <h1 class="hero-title">AWO courses</h1>
         <p class="hero-subtitle">
           Plataforma de cursos de programación y desarrollo web
         </p>
@@ -122,9 +122,12 @@ onUnmounted(() => {
 
 /* Hero Section */
 .hero-section {
+  min-height: 120px; 
+  padding: 1.25rem 1rem;
+  display: flex;
+  align-items: center;
   background: white;
-  padding: 3rem 2rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   border-bottom: 1px solid #e9ecef;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
@@ -140,7 +143,7 @@ onUnmounted(() => {
 .hero-title {
   font-size: 3rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #1565c0, #1976d2, #2196f3);
+  background: linear-gradient(135deg, #500505, #f187a2, #f71313);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -150,7 +153,7 @@ onUnmounted(() => {
 
 .hero-subtitle {
   font-size: 1.3rem;
-  color: #546e7a;
+  color: #8a526e;
   font-weight: 400;
   margin: 0;
   opacity: 0.9;
@@ -172,9 +175,9 @@ onUnmounted(() => {
 .loading-spinner-large {
   width: 60px;
   height: 60px;
-  border: 4px solid rgba(33, 150, 243, 0.2);
+  border: 4px solid rgba(58, 8, 25, 0.2);
   border-radius: 50%;
-  border-top-color: #2196f3;
+  border-top-color: #970a11;
   animation: spin 1s linear infinite;
   margin: 0 auto 2rem;
 }
@@ -185,7 +188,7 @@ onUnmounted(() => {
 
 .loading-text {
   font-size: 1.2rem;
-  color: #1976d2;
+  color: #740b14;
   font-weight: 500;
 }
 
@@ -232,7 +235,7 @@ onUnmounted(() => {
 .filters-title {
   font-size: 1.4rem;
   font-weight: 600;
-  color: #1565c0;
+  color: #920927;
   margin-bottom: 1.5rem;
 }
 
@@ -243,9 +246,9 @@ onUnmounted(() => {
 }
 
 .filter-btn {
-  background: rgba(33, 150, 243, 0.1);
-  border: 2px solid #2196f3;
-  color: #1976d2;
+  background: rgba(228, 10, 46, 0.103);
+  border: 2px solid #550606;
+  color: #d21919;
   padding: 0.75rem 2rem;
   border-radius: 25px;
   font-weight: 600;
@@ -255,15 +258,15 @@ onUnmounted(() => {
 }
 
 .filter-btn:hover {
-  background: rgba(33, 150, 243, 0.2);
+  background: rgba(255, 63, 79, 0.2);
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(33, 150, 243, 0.2);
+  box-shadow: 0 4px 16px rgba(53, 5, 7, 0.2);
 }
 
 .filter-btn.active {
-  background: linear-gradient(135deg, #2196f3, #1976d2);
+  background: linear-gradient(135deg, #ec1a1a, #83112a);
   color: white;
-  box-shadow: 0 4px 16px rgba(33, 150, 243, 0.3);
+  box-shadow: 0 4px 16px rgba(129, 10, 16, 0.3);
 }
 
 /* Courses Grid */
@@ -295,19 +298,19 @@ onUnmounted(() => {
 .no-courses-title {
   font-size: 1.8rem;
   font-weight: 600;
-  color: #1565c0;
+  color: #ee164c;
   margin-bottom: 1rem;
 }
 
 .no-courses-text {
-  color: #546e7a;
+  color: #9b1c1c;
   font-size: 1.1rem;
   margin-bottom: 2rem;
   line-height: 1.6;
 }
 
 .add-course-btn {
-  background: linear-gradient(135deg, #2196f3, #1976d2);
+  background: linear-gradient(135deg, #f32121, #740909);
   border: none;
   color: white;
   padding: 1rem 2rem;
@@ -316,12 +319,12 @@ onUnmounted(() => {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(33, 150, 243, 0.3);
+  box-shadow: 0 4px 16px rgba(243, 33, 96, 0.3);
 }
 
 .add-course-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(33, 150, 243, 0.4);
+  box-shadow: 0 8px 25px rgba(187, 20, 56, 0.4);
 }
 
 /* Responsive Design */

@@ -7,8 +7,8 @@
       class="course-image"
     />
     <BCardBody class="d-flex flex-column">
-      <BCardTitle>{{ course.nombre }}</BCardTitle>
-      <BCardText class="flex-grow-1">
+      <BCardTitle class="card-title">{{ course.nombre }}</BCardTitle>
+      <BCardText class="card-text flex-grow-1">
         <strong>Código:</strong> {{ course.codigo }}<br>
         <strong>Descripción:</strong> {{ course.descripcion }}<br>
         <strong>Duración:</strong> {{ course.duracion }}<br>
@@ -63,15 +63,18 @@ export default {
   },
   setup(props) {
     const inscriptionPercentage = computed(() => {
-      if (props.course.cupos === 0) return 0
-      return Math.round((props.course.inscritos / props.course.cupos) * 100)
+      const cupos = Number(props.course.cupos) || 0
+      const inscritos = Number(props.course.inscritos) || 0
+      if (cupos === 0) return 0
+      return Math.round((inscritos / cupos) * 100)
     })
 
     const formatPrice = (price) => {
+      const p = Number(price) || 0
       return new Intl.NumberFormat('es-CL', {
         style: 'decimal',
         minimumFractionDigits: 0
-      }).format(price)
+      }).format(p)
     }
 
     return {
@@ -83,36 +86,59 @@ export default {
 </script>
 
 <style scoped>
+:root{
+  --pastel-pink: #FFD7E2;
+  --card-border: #e6d6dc;
+}
+
+/* Card */
 .course-card {
-  transition: transform 0.2s;
-  border: 1px solid #dee2e6;
-  background-color: #95c5f8;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  border: 1px solid var(--card-border);
+  background-color: var(--pastel-pink);
+  border-radius: 10px;
+  overflow: hidden;
 }
 
+/* Hover lift */
 .course-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
+/* Image */
 .course-image {
-  height: 200px;
-  object-fit: contain;
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
   background-color: #f8f9fa;
-  padding: 1rem;
 }
 
+/* Card body / title / text */
 .card-body {
-  padding: 1.25rem;
+  padding: 1rem 1rem;
 }
 
 .card-title {
-  color: #007bff;
-  font-weight: 600;
-  margin-bottom: 1rem;
+  color: #222;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  font-size: 1.05rem;
 }
 
 .card-text {
-  font-size: 0.9rem;
-  line-height: 1.6;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: #333;
+}
+
+/* Progress & badge spacing */
+.mb-2 {
+  margin-bottom: 0.5rem !important;
+}
+
+/* Ensure the card stretches to equal heights inside a grid */
+.h-100 {
+  height: 100%;
 }
 </style>
