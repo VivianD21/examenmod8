@@ -1,0 +1,15 @@
+Firebase Hosting - Información de Acceso
+
+URL de la aplicación (Firebase Hosting):
+https://examenmodulo7.web.app
+
+Usuario de prueba (email):
+tester.examenmod7@example.com
+
+Clave de prueba (password):
+Vue1234!
+
+Notas:
+- Estos datos deben completarse DESPUÉS de ejecutar el deploy a Firebase Hosting.
+- El usuario de prueba debe existir en Firebase Authentication (método Email/Password).
+- Si usas un proyecto distinto para producción, recuerda actualizar src/firebase/config.js con las credenciales de ese proyecto antes del build.
