@@ -8,7 +8,11 @@ import {
   doc,
   getDocs
 } from 'firebase/firestore'
-import { db } from '../firebase/config'
+
+import { db } from '@/firebase/config'
+
+
+
 
 export const useCoursesStore = defineStore('courses', {
   state: () => ({
@@ -185,3 +189,5 @@ export const useCoursesStore = defineStore('courses', {
     }
   }
 })
+
+

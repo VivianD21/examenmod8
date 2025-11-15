@@ -66,17 +66,18 @@
             ></div>
           </template>
 
-          <template #cell(estado)="data">
-            <BFormCheckbox
-              :checked="Boolean(data.item.estado)"
-              :disabled="coursesStore.isLoading"
-              @update:checked="val => toggleCourseState(data.item, val)"
-              size="sm"
-              aria-label="Toggle estado"
-            >
-              {{ data.item.estado ? 'Activo' : 'Inactivo' }}
-            </BFormCheckbox>
-          </template>
+    <template #cell(estado)="data">
+  <BFormCheckbox
+    :checked="Boolean(data.item.estado)"
+    :disabled="coursesStore.isLoading"
+    size="sm"
+    aria-label="Toggle estado"
+    @change="ev => onCheckboxChange(data.item, ev)"
+  >
+    {{ data.item.estado ? 'Activo' : 'Inactivo' }}
+  </BFormCheckbox>
+</template>
+
 
           <template #cell(precio)="data">
             ${{ formatPrice(data.item.precio) }}
@@ -305,7 +306,7 @@ const resetForm = () => {
   newCourse.value = { codigo: '', nombre: '', descripcion: '', precio: '', duracion: '', cupos: '', inscritos: 0, estado: true, img: '' }
 }
 
-// toggle handler con optimistic update y rollback
+/* // toggle handler con optimistic update y rollback
 const toggleCourseState = async (item, newState) => {
   if (!item || !item.id) return
   if (coursesStore.isLoading) return
@@ -334,7 +335,40 @@ const toggleCourseState = async (item, newState) => {
     // eslint-disable-next-line no-alert
     alert('Error crítico al actualizar el estado')
   }
+} */
+
+
+const onCheckboxChange = async (item, ev) => {
+  if (!item || !item.id) {
+    console.warn('[Admin] checkbox change but item or id missing', item)
+    return
+  }
+  const checked = Boolean(ev.target.checked)
+  console.log('[Admin] Checkbox clicked', { id: item.id, checked })
+  await updateEstadoNoOptimista(item, checked)
 }
+
+const updateEstadoNoOptimista = async (item, desired) => {
+  try {
+    console.log('[Admin] intentando updateCourse', item.id, desired)
+    const result = await coursesStore.updateCourse(item.id, { estado: desired })
+    console.log('[Admin] resultado updateCourse', result)
+    if (result && result.success) {
+      if (!coursesStore.hasListener) {
+        const idx = coursesStore.courses.findIndex(c => c.id === item.id)
+        if (idx !== -1) coursesStore.courses[idx].estado = desired
+      }
+    } else {
+      alert('No fue posible actualizar el estado: ' + (result?.error || 'error desconocido'))
+    }
+  } catch (err) {
+    console.error('[Admin] error updateEstadoNoOptimista', err)
+    alert('Error crítico al actualizar estado (ver consola)')
+  }
+}
+
+
+
 
 // UI handlers
 const openAddForm = () => { showAddModal.value = true }
@@ -450,7 +484,8 @@ onUnmounted(() => {
 
 
 
-
 /* Mantener el estilo pequeño del h2 */
 .h2 { color: #bb1313; }
 </style>
+
+

@@ -148,8 +148,8 @@ const handleLogin = async () => {
 .login-icon {
   font-size: 2rem;
   font-weight: 800;
-  color: #2196f3;
-  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  color: #df0c0c;
+  background: linear-gradient(135deg, #e3f2fd, #f3bec2);
   width: 80px;
   height: 80px;
   border-radius: 16px;
@@ -157,8 +157,8 @@ const handleLogin = async () => {
   align-items: center;
   justify-content: center;
   margin: 0 auto 1rem auto;
-  border: 2px solid rgba(33, 150, 243, 0.2);
-  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.15);
+  border: 2px solid rgba(243, 130, 130, 0.801);
+  box-shadow: 0 4px 12px rgba(233, 169, 172, 0.15);
 }
 
 .login-title {
